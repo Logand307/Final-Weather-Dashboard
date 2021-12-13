@@ -76,7 +76,7 @@ function displayCurrentWeather() {
     var humidityEl = $("<p>").text("Humidity: " + humidityValue + "%");
     var windSpeedEl = $("<p>").text("Wind Speed: " + windSpeed + " MPH");
     var uvIndexEl = $("<p>").text("UV Index: ");
-    // var uvIndexValueEl = $("<span>").text(uvIndexValue).css("background-color", getColorCodeForUVIndex(uvIndexValue)).addClass("text-white");
+
     var uvIndexValueEl = $("<span>").text(uvIndexValue).css("background-color", getColorCodeForUVIndex(uvIndexValue));
     uvIndexEl.append(uvIndexValueEl);
     cardDiv.append(cardHeader);
@@ -172,29 +172,27 @@ function resetGlobalVariables() {
 }
 
 function searchCity(cityName) {
-    // build URL to query the database
+
     console.log(cityName);
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" +
         cityName + "&appid=" + APIKey;
 
-    // run the AJAX call to the OpenWatherAPI
+
     $.ajax({
         url: queryURL,
         method: "GET"
     })
 
-    // store all of the retrieved data inside of an object called "response"
+
     .then(function(response) {
         var result = response;
         console.log(result);
         city = result.name.trim();
-        //  var countryCode = result.sys.country;
-        //  country = getCountryName(countryCode).trim();
-        //  currentDate = moment().tz(country + "/" + city).format('l');
+
         currentDate = moment.unix(result.dt).format("l");
         console.log(currentDate);
         var tempK = result.main.temp;
-        // Converts the temp to Kelvin with the below formula
+
         tempF = ((tempK - 273.15) * 1.80 + 32).toFixed(1);
         humidityValue = result.main.humidity;
         windSpeed = result.wind.speed;
@@ -222,7 +220,7 @@ function searchCity(cityName) {
                         for (var i = 0; i < 5; i++) {
                             iconcode = fiveDayForecast[i].weather[0].icon;
                             iconurl = "https://openweathermap.org/img/w/" + iconcode + ".png";
-                            //  dateValue = moment().tz(country + "/" + city).add(i, 'days').format('l');
+
                             dateValue = moment.unix(fiveDayForecast[i].dt).format('l');
                             minTempK = fiveDayForecast[i].temp.min;
                             minTempF = ((minTempK - 273.15) * 1.80 + 32).toFixed(1);
