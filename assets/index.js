@@ -182,3 +182,56 @@ function searchCity(cityName) {
         url: queryURL,
         method: "GET"
     })
+
+    // store all of the retrieved data inside of an object called "response"
+    .then(function(response) {
+        var result = response;
+        console.log(result);
+        city = result.name.trim();
+        //  var countryCode = result.sys.country;
+        //  country = getCountryName(countryCode).trim();
+        //  currentDate = moment().tz(country + "/" + city).format('l');
+        currentDate = moment.unix(result.dt).format("l");
+        console.log(currentDate);
+        var tempK = result.main.temp;
+        // Converts the temp to Kelvin with the below formula
+        tempF = ((tempK - 273.15) * 1.80 + 32).toFixed(1);
+        humidityValue = result.main.humidity;
+        windSpeed = result.wind.speed;
+        currentWeatherIconCode = result.weather[0].icon;
+        currentWeatherIconUrl = "https://openweathermap.org/img/w/" + currentWeatherIconCode + ".png";
+        var latitude = result.coord.lat;
+        var longitude = result.coord.lon;
+        var uvIndexQueryUrl = "https://api.openweathermap.org/data/2.5/uvi?&appid=" + APIKey + "&lat=" + latitude + "&lon=" + longitude;
+        $.ajax({
+                url: uvIndexQueryUrl,
+                method: "GET"
+            })
+            .then(function(response) {
+                uvIndexValue = response.value;
+                displayCurrentWeather()
+
+                var fiveDayQueryUrl = "https://api.openweathermap.org/data/2.5/forecast/daily?q=" + city + "&appid=" + APIKey + "&cnt=5";
+                $.ajax({
+                        url: fiveDayQueryUrl,
+                        method: "GET"
+                    })
+                    .then(function(response) {
+                        var fiveDayForecast = response.list;
+                        addCardDeckHeader()
+                        for (var i = 0; i < 5; i++) {
+                            iconcode = fiveDayForecast[i].weather[0].icon;
+                            iconurl = "https://openweathermap.org/img/w/" + iconcode + ".png";
+                            //  dateValue = moment().tz(country + "/" + city).add(i, 'days').format('l');
+                            dateValue = moment.unix(fiveDayForecast[i].dt).format('l');
+                            minTempK = fiveDayForecast[i].temp.min;
+                            minTempF = ((minTempK - 273.15) * 1.80 + 32).toFixed(1);
+                            maxTempK = fiveDayForecast[i].temp.max;
+                            maxTempF = (((fiveDayForecast[i].temp.max) - 273.15) * 1.80 + 32).toFixed(1);
+                            dayhumidity = fiveDayForecast[i].humidity;
+                            displayDayForeCast()
+                        }
+                    });
+            });
+    });
+}
